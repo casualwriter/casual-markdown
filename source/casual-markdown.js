@@ -118,20 +118,55 @@
     return '<div class="markdown">' + mdHTML + md.parser( mdText ) + '</div>'
   }
 
-  //==== TOC support
-  md.toc = function (source, target, options) {
-    var toc = md(source).querySelectorAll('h2,h3,h4')
-    var html = '<button style="float:right" onclick="this.parentElement.style.display=\'none\'">X</button>'
-    html += '<ul class="toc"><h3>Table of Contents</h3>';
+  //===== TOC support
+  md.toc = function (srcDiv, tocDiv, options) {
+  
+    // deafult options 
+    var opts = options || { title:'Table of Contents', css:'h1,h2,h3,h4', button:false, scrollspy:'active' }
+    // select elements
+    var toc = md(srcDiv).querySelectorAll( opts.css||'h1,h2,h3,h4' )
     
+    // show TOC title
+    var html = '<div class="toc"><ul><h3>' + (opts.title||'Table of Contents') + '</h3>';
+    // sow close button
+    if (opts.button) {
+      var btnClose = '<button style="float:right" onclick="this.parentElement.style.display=\'none\'">'
+      html = html.replace('<ul>', btnClose + opts.button + '</button><ul>')
+    }
+    
+    // loop for each element,add <li> element with class in TAG name.
     for (var i=0; i<toc.length; i++ ) {
+      if (toc[i].id.substr(0,6)=='no-toc') continue;
       if (!toc[i].id) toc[i].id = "toc-item-" + i;
-      html += '<li class="' + toc[i].nodeName + '"><a href="#' + toc[i].id + '">' 
+      html += '<li class="' + toc[i].nodeName + '" title="#' + toc[i].id + '" onclick="location=this.title">' 
       html += toc[i].textContent + '</a></li>';
     }
     
-    md(target).innerHTML = html + "</ul>";
-    md(target).style.display = 'block';
+    md(tocDiv).innerHTML = html + "</ul>";
+    md(tocDiv).style.display = 'block';
+    
+    //=== scrollspy support
+    if (opts.scrollspy) {
+      document.getElementById(srcDiv).onscroll = function () {
+        // get links and get viewport position   
+        var list = document.getElementById(tocDiv||'toc').querySelectorAll('li')
+        var divScroll = document.getElementById(srcDiv).scrollTop - 10
+        var divHeight = document.getElementById(srcDiv).offsetHeight
+        
+        // loop for each header element, add/remove scrollspy class
+        for (var i=0; i<list.length; i++) {
+          var div = document.getElementById( list[i].title.substr(1) )
+          var pos = (div? div.offsetTop - divScroll : 0 )  
+          if ( pos>0 && pos<divHeight ) {
+            list[i].classList.add( opts.scrollspy );
+          } else {
+            list[i].classList.remove( opts.scrollspy );
+          }
+        }
+      }
+    }
+    //====== end of scrollspy service
+    
   }  
   
   if (typeof exports==='object') { 

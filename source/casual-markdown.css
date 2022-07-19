@@ -7,11 +7,11 @@
 .markdown tr:nth-child(even) {  background:#f6f6f6;  }
 .markdown ins { color:#890604 } 
 .markdown rem { color:#198964 }
-#toc { background: rgba(210,210,210,0.8); border:1px solid grey; }
-#toc { position:fixed; right:8px; top:8px; padding:4px;  }
-#toc ul  { padding: 0 12px; }
-#toc h3  { color:#a06; border-bottom:1px dotted  grey }
-#toc .H2 { list-style-type:none; font-weight:600; margin:4px; }
-#toc .H3 { margin-left:2em }
-#toc .H4 { margin-left:4em }
-
+.toc ul  { padding: 0 12px; }
+.toc h3  { color:#a06; border-bottom:1px dotted  grey }
+.toc .H1 { list-style-type:none; font-weight:600; margin:4px; background:#eee }
+.toc .H2 { list-style-type:none; font-weight:600; margin:4px; }
+.toc .H3 { margin-left:2em }
+.toc .H4 { margin-left:4em }
+.toc .active { color:#a06  }
+.toc li:hover { background:#f0f0f0 }
