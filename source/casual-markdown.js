@@ -1,21 +1,23 @@
 ﻿/*****************************************************************************
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
- * last updated on 2022/07/19, v0.80, refine table syntax, code formatter
+ * last updated on 2022/07/21, v0.82, refine table syntax, code formatter, toc, scrollspy
  *
  * Copyright (c) 2022, Casualwriter (MIT Licensed)
  * https://github.com/casualwriter/casual-markdown
 *****************************************************************************/
 ;(function(){ 
 
-  var md = function (id) { return document.getElementById(id) }
+  // define md object, and extent function (which is a dummy function for user extension)
+  var md = { before: function (str) {return str}, after: function (str) {return str} }
 
   // function for REGEXP to convert html tag. ie. <TAG> => &lt;TAG*gt;  
   md.formatTag = function (html) { return html.replace(/</g,'&lt;').replace(/\>/g,'&gt;'); }
 
   //===== format code-block, highlight remarks/keywords for code/sql
   md.formatCode = function (match, title, block) {
-    // convert tag <> to &lt; &gt;
-    block = block.replace(/</g,'&lt;').replace(/\>/g,'&gt;').replace(/\t/g,'   ')
+    // convert tag <> to &lt; &gt; tab to 3 space, support mark code using ^^^
+    block = block.replace(/</g,'&lt;').replace(/\>/g,'&gt;')
+    block = block.replace(/\t/g,'   ').replace(/\^\^\^(.+?)\^\^\^/g, '<mark>$1</mark>')
     
     // highlight comment and keyword based on title := none | sql | code
     if (title.toLowerCase(title) == 'sql') {
@@ -34,9 +36,10 @@
   md.parser = function( mdstr ) {
     // table syntax
     mdstr = mdstr.replace(/\n(.+?)\n.*?\-\-\|\-\-.*?\n([\s\S]*?)\n\s*?\n/g, function (m,p1,p2) {
-        var thead = '<thead>\n<tr><th>' + p1.replace(/\|/g,'<th>') + '</th></thead>'
-        var tbody = p2.replace(/(.+)/gm,'<tr><td>$1</td></tr>').replace(/\|/g,'<td>')
-        return '\n<table>' + thead + '\n<tbody>' + tbody + '\n</tbody></table>\n\n' 
+        var thead = p1.replace(/^\|(.+)/gm,'$1').replace(/(.+)\|$/gm,'$1').replace(/\|/g,'<th>')
+        var tbody = p2.replace(/^\|(.+)/gm,'$1').replace(/(.+)\|$/gm,'$1')
+        tbody = tbody.replace(/(.+)/gm,'<tr><td>$1</td></tr>').replace(/\|/g,'<td>')
+        return '\n<table>\n<thead>\n<th>' + thead + '\n</thead>\n<tbody>' + tbody + '\n</tbody></table>\n\n' 
     } )   
 
     // horizontal rule => <hr> 
@@ -86,8 +89,9 @@
     mdstr = mdstr.replace(/___(\w.*?[^\\])___/gm, '<b><em>$1</em></b>')
     mdstr = mdstr.replace(/__(\w.*?[^\\])__/gm, '<u>$1</u>')
     // mdstr = mdstr.replace(/_(\w.*?[^\\])_/gm, '<u>$1</u>')  // NOT support!! 
-    mdstr = mdstr.replace(/~~(\w.*?)~~/gm, '<del>$1</del>')
+    mdstr = mdstr.replace(/\^\^\^(.+?)\^\^\^/gm, '<mark>$1</mark>')
     mdstr = mdstr.replace(/\^\^(\w.*?)\^\^/gm, '<ins>$1</ins>')
+    mdstr = mdstr.replace(/~~(\w.*?)~~/gm, '<del>$1</del>')
                   
     // line break and paragraph => <br/> <p>                
     mdstr = mdstr.replace(/  \n/g, '\n<br/>').replace(/\n\s*\n/g, '\n<p>\n')
@@ -111,28 +115,22 @@
     // split by "<code>", skip for code-block and process normal text
     while ( (pos1 = mdText.indexOf('<code>')) >= 0 ) {
       pos2 = mdText.indexOf('</code>', pos1 )
-      mdHTML += md.parser( mdText.substr(0,pos1) ) + mdText.substr(pos1, (pos2>0? pos2-pos1+7 : mdtext.length) )
+      mdHTML += md.after( md.parser( md.before( mdText.substr(0,pos1) ) ) )
+      mdHTML += mdText.substr(pos1, (pos2>0? pos2-pos1+7 : mdtext.length) )
       mdText = mdText.substr( pos2 + 7 )
     }
 
-    return '<div class="markdown">' + mdHTML + md.parser( mdText ) + '</div>'
+    return '<div class="markdown">' + mdHTML + md.after( md.parser( md.before(mdText) ) ) + '</div>'
   }
 
   //===== TOC support
-  md.toc = function (srcDiv, tocDiv, options) {
-  
-    // deafult options 
-    var opts = options || { title:'Table of Contents', css:'h1,h2,h3,h4', button:false, scrollspy:'active' }
-    // select elements
-    var toc = md(srcDiv).querySelectorAll( opts.css||'h1,h2,h3,h4' )
-    
-    // show TOC title
-    var html = '<div class="toc"><ul><h3>' + (opts.title||'Table of Contents') + '</h3>';
-    // sow close button
-    if (opts.button) {
-      var btnClose = '<button style="float:right" onclick="this.parentElement.style.display=\'none\'">'
-      html = html.replace('<ul>', btnClose + opts.button + '</button><ul>')
-    }
+  md.toc = function (srcDiv, tocDiv, options ) {
+
+    // select elements, set title
+    var tocSelector = (options&&options.css) || 'h1,h2,h3,h4'
+    var tocTitle = (options&&options.title) || 'Table of Contents'
+    var toc = document.getElementById(srcDiv).querySelectorAll( tocSelector )
+    var html = '<div class="toc"><ul>' + (tocTitle=='none'? '' : '<h3>' + tocTitle + '</h3>');
     
     // loop for each element,add <li> element with class in TAG name.
     for (var i=0; i<toc.length; i++ ) {
@@ -142,31 +140,32 @@
       html += toc[i].textContent + '</a></li>';
     }
     
-    md(tocDiv).innerHTML = html + "</ul>";
-    md(tocDiv).style.display = 'block';
+    document.getElementById(tocDiv).innerHTML = html + "</ul>";
+
+    //===== scrollspy support (ps: add to document if element(scroll) not found)
+    if ( options && options.scrollspy ) {
     
-    //=== scrollspy support
-    if (opts.scrollspy) {
-      document.getElementById(srcDiv).onscroll = function () {
-        // get links and get viewport position   
-        var list = document.getElementById(tocDiv||'toc').querySelectorAll('li')
-        var divScroll = document.getElementById(srcDiv).scrollTop - 10
-        var divHeight = document.getElementById(srcDiv).offsetHeight
-        
-        // loop for each header element, add/remove scrollspy class
-        for (var i=0; i<list.length; i++) {
-          var div = document.getElementById( list[i].title.substr(1) )
-          var pos = (div? div.offsetTop - divScroll : 0 )  
-          if ( pos>0 && pos<divHeight ) {
-            list[i].classList.add( opts.scrollspy );
-          } else {
-            list[i].classList.remove( opts.scrollspy );
+      (document.getElementById(scroll)||document).onscroll = function () {
+      
+          // get TOC elements, and viewport position   
+          var list = document.getElementById(tocDiv).querySelectorAll('li')
+          var divScroll = document.getElementById(scroll) || document.documentElement
+          var divHeight = divScroll.clientHeight || divScroll.offsetHeight 
+          
+          // loop for each TOC element, add/remove scrollspy class
+          for (var i=0; i<list.length; i++) {
+            var div = document.getElementById( list[i].title.substr(1) )
+            var pos = (div? div.offsetTop - divScroll.scrollTop + 10: 0 )  
+            if ( pos>0 && pos<divHeight ) {
+              list[i].className = list[i].className.replace('active','') + ' active' // classList.add( 'active' );
+            } else {
+              list[i].className = list[i].className.replace('active','') // classList.remove( 'active' );
+            }
           }
         }
-      }
+      
     }
-    //====== end of scrollspy service
-    
+    //===== end of scrollspy
   }  
   
   if (typeof exports==='object') { 
