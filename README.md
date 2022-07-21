@@ -46,7 +46,7 @@ Once include the javascript library, markdown parser object `md` is available wi
 
 * `md.html(mdString)` - convert markdown string into html
 * `md.toc( mdElement, tocElement, options)` - generate TOC html to tocElement
-* default TOC option := { title:'Table of Contents', css:'h1,h2,h3,h4', button:false, scrollspy:'active' }
+* default TOC option := { title:'Table of Contents', css:'h1,h2,h3,h4', scrollspy:null }
 
 for example
 
@@ -69,8 +69,8 @@ md.toc( 'content', 'toc', { title:'Index', scrollspy:'content' } )
 
 **Code-block formatter**
 
-the highlight keyword is hardcode in function md.formatCode(). 
-If need highlight different keyword, please override original function md.formatCode() showing below. 
+code-block keywords are hard-code in function md.formatCode(). 
+If do want to highlight different keywords, please override original function md.formatCode() showing below. 
 
 ~~~
 //===== format code-block, highlight remarks/keywords for code/sql
