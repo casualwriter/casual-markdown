@@ -1,6 +1,6 @@
 ## casual-markdown
 
-A super lightweight RegExp-based markdown parser, with TOC and scrollspy support
+A super lightweight RegExp-based markdown parser, with TOC, scrollspy and frontmatter support
 
 It revises from simple-markdown-parser of [Powerpage Markdown Document](https://github.com/casualwriter/powerpage-md-document) 
 for the following features
@@ -10,11 +10,11 @@ for the following features
 * support all browsers (IE9+, Chrome, Firfox, Brave, etc..)
 * straight-forward coding style, hopefully readable.
 * support [basic syntax](https://casualwriter.github.io/casual-markdown/casual-markdown-syntax.html) according [Basic Markdown Syntax (markdownguide.org)](https://www.markdownguide.org/basic-syntax/)  
-* support subset of [extended-syntax](https://casualwriter.github.io/casual-markdown/casual-markdown-syntax.html#enhanced-syntax)
+* support some [enhanced syntax](https://casualwriter.github.io/casual-markdown/casual-markdown-syntax.html#enhanced-syntax)
 * TOC and scrollspy support
-* highlight comment and keyword in code-block
+* highlight comments/keywords in code-block
 * frontmatter for simple YAML
-* extendable (by override md.before, md.after, md.formatCode)
+* extendable (by override md.before, md.after, md.formatCode, md.formatYAML)
 
 
 ### Usage Guide
@@ -157,9 +157,9 @@ github  : https://github.com/casualwriter/casual-markdown
 version : v0.85, last updated on 2022/07/22
 -----------------------------------------------------------------------------
 
-## ^^^{{ title }}^^^
+## {{ title }}
 
-[casual-markdown](^^^{{github}}^^^) is a super lightweight RegExp-based markdown parser, with TOC and scrollspy support
+[casual-markdown]({{github}}) is a super lightweight RegExp-based markdown parser, with TOC and scrollspy support
 
 ```
 
@@ -179,4 +179,4 @@ and html string with ``{{ name }}`` will be replaced with related values
 * 2022/07/19, v0.80, initial release.
 * 2022/07/21, v0.82, refine toc/scrollspy, add dummy function for extension
 * 2022/07/22, v0.85, front matter for simple YAML
-- todo, 
+

@@ -1,19 +1,19 @@
 ﻿/*****************************************************************************
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
- * last updated on 2022/07/22, v0.85, code formatter, toc, scrollspy and front matter  
+ * last updated on 2022/07/22, v0.85, code formatter, toc, scrollspy and frontmatter  
  *
  * Copyright (c) 2022, Casualwriter (MIT Licensed)
  * https://github.com/casualwriter/casual-markdown
 *****************************************************************************/
 ;(function(){ 
 
-  // define md object, and extent function (which is a dummy function for user extension)
+  // define md object, and extent function (which is a dummy function)
   var md = { yaml:{}, before: function (str) {return str}, after: function (str) {return str} }
 
   // function for REGEXP to convert html tag. ie. <TAG> => &lt;TAG*gt;  
   md.formatTag = function (html) { return html.replace(/</g,'&lt;').replace(/\>/g,'&gt;'); }
 
-  // front matter for simple YAML (support 1 level only)
+  // frontmatter for simple YAML (only support one level and string value)
   md.formatYAML = function (front, matter) {
     matter.replace( /^\s*([^:]+):(.*)$/gm, function(m,key,val) { md.yaml[key.trim()] = val.trim() } );
     return ''
@@ -21,7 +21,7 @@
 
   //===== format code-block, highlight remarks/keywords for code/sql
   md.formatCode = function (match, title, block) {
-    // convert tag <> to &lt; &gt; tab to 3 space, support mark code using ^^^
+    // convert tag <> to &lt; &gt; tab to 3 space, support marker using ^^^
     block = block.replace(/</g,'&lt;').replace(/\>/g,'&gt;')
     block = block.replace(/\t/g,'   ').replace(/\^\^\^(.+?)\^\^\^/g, '<mark>$1</mark>')
     
@@ -40,10 +40,10 @@
   
   //===== parse markdown string into HTML string (exclude code-block)
   md.parser = function( mdstr ) {
+  
     // apply yaml variables
-    console.log( 'BEFORE==>', mdstr.substr(0,100) )
     for (var name in this.yaml) mdstr = mdstr.replace( new RegExp('\{\{\\s*'+name+'\\s*\}\}', 'gm'), this.yaml[name] )
-    console.log( 'AFTER==>', mdstr.substr(0,100) )
+    
     // table syntax
     mdstr = mdstr.replace(/\n(.+?)\n.*?\-\-\|\-\-.*?\n([\s\S]*?)\n\s*?\n/g, function (m,p1,p2) {
         var thead = p1.replace(/^\|(.+)/gm,'$1').replace(/(.+)\|$/gm,'$1').replace(/\|/g,'<th>')
@@ -153,7 +153,7 @@
     
     document.getElementById(tocDiv).innerHTML = html + "</ul>";
 
-    //===== scrollspy support (ps: add to document if element(scroll) not found)
+    //===== scrollspy support (ps: add to document.body if element(scrollspy) not found)
     if ( options && options.scrollspy ) {
       
       (document.getElementById(options.scrollspy)||document).onscroll = function () {
