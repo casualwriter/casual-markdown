@@ -144,12 +144,12 @@
 
     //===== scrollspy support (ps: add to document if element(scroll) not found)
     if ( options && options.scrollspy ) {
-    
-      (document.getElementById(scroll)||document).onscroll = function () {
+      
+      (document.getElementById(options.scrollspy)||document).onscroll = function () {
       
           // get TOC elements, and viewport position   
           var list = document.getElementById(tocDiv).querySelectorAll('li')
-          var divScroll = document.getElementById(scroll) || document.documentElement
+          var divScroll = document.getElementById(options.scrollspy) || document.documentElement
           var divHeight = divScroll.clientHeight || divScroll.offsetHeight 
           
           // loop for each TOC element, add/remove scrollspy class

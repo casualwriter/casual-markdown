@@ -1,6 +1,6 @@
 ﻿/*****************************************************************************
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
- * last updated on 2022/07/21, v0.82, refine table syntax, code formatter, toc, scrollspy
+ * last updated on 2022/07/22, v0.85, code formatter, toc, scrollspy and front matter  
  *
  * Copyright (c) 2022, Casualwriter (MIT Licensed)
  * https://github.com/casualwriter/casual-markdown
@@ -8,10 +8,16 @@
 ;(function(){ 
 
   // define md object, and extent function (which is a dummy function for user extension)
-  var md = { before: function (str) {return str}, after: function (str) {return str} }
+  var md = { yaml:{}, before: function (str) {return str}, after: function (str) {return str} }
 
   // function for REGEXP to convert html tag. ie. <TAG> => &lt;TAG*gt;  
   md.formatTag = function (html) { return html.replace(/</g,'&lt;').replace(/\>/g,'&gt;'); }
+
+  // front matter for simple YAML (support 1 level only)
+  md.formatYAML = function (front, matter) {
+    matter.replace( /^\s*([^:]+):(.*)$/gm, function(m,key,val) { md.yaml[key.trim()] = val.trim() } );
+    return ''
+  }
 
   //===== format code-block, highlight remarks/keywords for code/sql
   md.formatCode = function (match, title, block) {
@@ -34,6 +40,10 @@
   
   //===== parse markdown string into HTML string (exclude code-block)
   md.parser = function( mdstr ) {
+    // apply yaml variables
+    console.log( 'BEFORE==>', mdstr.substr(0,100) )
+    for (var name in this.yaml) mdstr = mdstr.replace( new RegExp('\{\{\\s*'+name+'\\s*\}\}', 'gm'), this.yaml[name] )
+    console.log( 'AFTER==>', mdstr.substr(0,100) )
     // table syntax
     mdstr = mdstr.replace(/\n(.+?)\n.*?\-\-\|\-\-.*?\n([\s\S]*?)\n\s*?\n/g, function (m,p1,p2) {
         var thead = p1.replace(/^\|(.+)/gm,'$1').replace(/(.+)\|$/gm,'$1').replace(/\|/g,'<th>')
@@ -67,7 +77,7 @@
     mdstr = mdstr.replace(/!\[(.*?)\]\((.*?) "(.*?)"\)/gm, '<img alt="$1" src="$2" $3 />')
     mdstr = mdstr.replace(/!\[(.*?)\]\((.*?)\)/gm, '<img alt="$1" src="$2" width="90%" />')
                   
-    // links syntax: [title](url) => <a href="url" title="title">text</a>          
+    // links syntax: [title "title"](url) => <a href="url" title="title">text</a>          
     mdstr = mdstr.replace(/\[(.*?)\]\((.*?) "new"\)/gm, '<a href="$2" target=_new>$1</a>')
     mdstr = mdstr.replace(/\[(.*?)\]\((.*?) "(.*?)"\)/gm, '<a href="$2" title="$3">$1</a>')
     mdstr = mdstr.replace(/([<\s])(http[s]\:\/\/.*?)([\s\>])/gm, '$1<a href="$2">$2</a>$3')
@@ -107,12 +117,13 @@
 
   //===== parse markdown string into HTML content (cater code-block)
   md.html = function (mdText) { 
-    // first, handle syntax for code-block
-    var pos1=0, pos2=0, mdHTML = ''
-    mdText = mdText.replace(/\r\n/g, '\n').replace(/\n~~~/g,'\n```')
-    mdText = mdText.replace(/\n``` *(.*?)\n([\s\S]*?)\n``` *\n/g, md.formatCode)
+    // replace \r\n to \n, and handle front matter for simple YAML
+    mdText = mdText.replace(/\r\n/g, '\n').replace( /^---+\s*\n([\s\S]*?)\n---+\s*\n/, md.formatYAML )
+    // handle code-block.
+    mdText = mdText.replace(/\n~~~/g,'\n```').replace(/\n``` *(.*?)\n([\s\S]*?)\n``` *\n/g, md.formatCode)
     
     // split by "<code>", skip for code-block and process normal text
+    var pos1=0, pos2=0, mdHTML = ''
     while ( (pos1 = mdText.indexOf('<code>')) >= 0 ) {
       pos2 = mdText.indexOf('</code>', pos1 )
       mdHTML += md.after( md.parser( md.before( mdText.substr(0,pos1) ) ) )
@@ -144,12 +155,12 @@
 
     //===== scrollspy support (ps: add to document if element(scroll) not found)
     if ( options && options.scrollspy ) {
-    
-      (document.getElementById(scroll)||document).onscroll = function () {
+      
+      (document.getElementById(options.scrollspy)||document).onscroll = function () {
       
           // get TOC elements, and viewport position   
           var list = document.getElementById(tocDiv).querySelectorAll('li')
-          var divScroll = document.getElementById(scroll) || document.documentElement
+          var divScroll = document.getElementById(options.scrollspy) || document.documentElement
           var divHeight = divScroll.clientHeight || divScroll.offsetHeight 
           
           // loop for each TOC element, add/remove scrollspy class

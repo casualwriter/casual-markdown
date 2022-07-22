@@ -187,3 +187,41 @@
      this.md=md;
   }
 }).call( function(){ return this||(typeof window!=='undefined'?window:global)}() );
+
+//=============================================================================
+// 20220719, show markdown-document in <body> tag into HTML document
+//=============================================================================
+window.onload = function () {
+
+  var html = '<div class="container" style="margin:auto; max-width:1024px; padding:4px;">'
+  html += '<header id=heading>' + (document.body.title||document.title) + '</header>'
+  html += '\n<div id=tocbox><button style="float:right" onclick="this.parentElement.style.display=\'none\'">'
+  html += 'X</button><div id="toc"></div></div>' 
+  html += '\n<div id=content>' + md.html(document.body.innerHTML.replace(/\&gt;/g,'>')) + '</div></div>'; 
+
+  // add shortcut for edit current page.
+  html += '<a href=# onclick="tocToggle()" accesskey=t style="display:none">TOC</a>';
+  html += '<a href=# onclick="debug()" accesskey=x style="display:none">HTML</a>';
+  
+  document.body.innerHTML = html
+  document.body.style.display = 'block';
+  md.toc( 'content', 'toc', { scrollspy:'body' } )
+  
+}
+
+// toggle TOC 
+function tocToggle(show) {
+  var disp = document.getElementById('tocbox').style.display
+  document.getElementById('tocbox').style.display = show||(disp=='none')? 'block' : 'none'
+}
+
+// debug: show HTML
+function debug() {
+  var html = document.getElementById('content').innerHTML
+  if (html.substr(0,5)=='<xmp>') {
+     document.getElementById('content').innerHTML = html.substr(5, html.length-11)
+  } else {
+     document.getElementById('content').innerHTML = '<xmp>' + html.replace(/xmp\>/g,'|xmp>') + '</xmp>' 
+  }
+}
+
