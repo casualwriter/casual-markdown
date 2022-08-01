@@ -1,6 +1,6 @@
-﻿/*****************************************************************************
+/*****************************************************************************
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
- * last updated on 2022/07/22, v0.85, code formatter, toc, scrollspy and frontmatter  
+ * last updated on 2022/07/31, v0.90, refine frontmatter (simple yaml)  
  *
  * Copyright (c) 2022, Casualwriter (MIT Licensed)
  * https://github.com/casualwriter/casual-markdown
@@ -13,9 +13,14 @@
   // function for REGEXP to convert html tag. ie. <TAG> => &lt;TAG*gt;  
   md.formatTag = function (html) { return html.replace(/</g,'&lt;').replace(/\>/g,'&gt;'); }
 
-  // frontmatter for simple YAML (only support one level and string value)
+  // frontmatter for simple YAML (support multi-level, but string value only)
   md.formatYAML = function (front, matter) {
-    matter.replace( /^\s*([^:]+):(.*)$/gm, function(m,key,val) { md.yaml[key.trim()] = val.trim() } );
+    var level = {}, latest = md.yaml;
+    matter.replace( /^\s*#(.*)$/gm, '' ).replace( /^( *)([^:^\n]+):(.*)$/gm, function(m, sp, key,val) { 
+        level[sp] = level[sp] || latest
+        latest = level[sp][key.trim()] = val.trim() || {}
+        for (e in level) if(e>sp) level[e]=null;
+      } );
     return ''
   }
 

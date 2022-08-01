@@ -36,8 +36,8 @@ or CDN
 or github-page (may specify version no)
 
 ~~~ 
-<link rel="stylesheet" href="https://casualwriter.github.io/dist/casual-markdown@0.85.css">
-<script src="https://casualwriter.github.io/dist/casual-markdown@0.85.js"></script>
+<link rel="stylesheet" href="https://casualwriter.github.io/dist/casual-markdown@0.90.css">
+<script src="https://casualwriter.github.io/dist/casual-markdown@0.90.js"></script>
 ~~~ 
 
 
@@ -154,7 +154,7 @@ Frontmatter start with `---` (at least three) in first line of markdown document
 title   : Casual Markdown 
 toc     : leftspy
 github  : https://github.com/casualwriter/casual-markdown 
-version : v0.85, last updated on 2022/07/22
+version : v0.90, last updated on 2022/07/31
 -----------------------------------------------------------------------------
 
 ## {{ title }}
@@ -165,18 +165,19 @@ version : v0.85, last updated on 2022/07/22
 
 After called md.html(), js program may refer these values by `md.yaml[name]` (i.e. md.yaml = { title:'Casual Markdown', toc:'leftspy', .... }) 
 and html string with ``{{ name }}`` will be replaced with related values
-
+                                               
 
 ### Applications
 
-* show markdown as document. `casual-md-view.html?file={md-file}&title={titel}&toc={left|right|top|none}`
-* use markdown for blogging. `casual-md-blog.html`  
-* document by markdown. `casual-md-doc.js`
+* [Markdown-as-Document](markdown-as-document.md): [casual-markdown-doc.js](source/casual-markdown-doc.js), [casual-markdown-doc.css](source/casual-markdown-doc.css)
+* [Markdown-as-WebPage](markdown-as-webpage.md): [causual-markdown-page.html](source/casual-markdown-page.html)  
+* [Markdown-as-Blog](markdown-as-blog.md), developping... 
 
 
 ### Update History
 
 * 2022/07/19, v0.80, initial release.
 * 2022/07/21, v0.82, refine toc/scrollspy, add dummy function for extension
-* 2022/07/22, v0.85, front matter for simple YAML
+* 2022/07/22, v0.85, frontmatter for simple YAML
+* 2022/07/22, v0.90, refine frontmatter. code casual-markdown-doc.js, casual-markdown-page.html
 

@@ -1,4 +1,4 @@
-﻿/*****************************************************************************
+/*****************************************************************************
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
  * last updated on 2022/07/22, v0.85, code formatter, toc, scrollspy and front matter  
  *
@@ -189,7 +189,7 @@
 }).call( function(){ return this||(typeof window!=='undefined'?window:global)}() );
 
 //=============================================================================
-// 20220719, show markdown-document in <body> tag into HTML document
+// 20220719, convert markdown-document in <body> tag into HTML document
 //=============================================================================
 window.onload = function () {
 

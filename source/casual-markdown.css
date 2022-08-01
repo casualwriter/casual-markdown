@@ -4,7 +4,7 @@
 .markdown table { margin:12px; border-collapse: collapse; }
 .markdown th    { border:1px solid grey; background:lightgrey; padding:6px; } 
 .markdown td    { border:1px solid grey;  padding:6px; }
-.markdown tr:nth-child(even) {  background:#f6f6f6;  }
+.markdown tr:nth-child(even) {  background:#f0f0f0;  }
 .markdown ins { color:#890604 } 
 .markdown rem { color:#198964 }
 .toc ul  { padding: 0 12px; }
