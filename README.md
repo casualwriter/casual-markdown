@@ -169,9 +169,9 @@ and html string with ``{{ name }}`` will be replaced with related values
 
 ### Applications
 
-* [Markdown-as-Document](markdown-as-document.md): [casual-markdown-doc.js](source/casual-markdown-doc.js), [casual-markdown-doc.css](source/casual-markdown-doc.css)
-* [Markdown-as-WebPage](markdown-as-webpage.md): [causual-markdown-page.html](source/casual-markdown-page.html)  
-* [Markdown-as-Blog](markdown-as-blog.md), developping... 
+* Markdown-as-Document: https://github.com/casualwriter/casual-markdown-doc 
+* Markdown-as-WebPage: https://github.com/casualwriter/casual-markdown-page   
+* Markdown-as-Blog: developping... 
 
 
 ### Update History
