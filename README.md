@@ -1,16 +1,15 @@
 ## casual-markdown
 
-A super lightweight RegExp-based markdown parser, with TOC, scrollspy and frontmatter support
+A lightweight RegExp-based markdown parser, with TOC, scrollspy and frontmatter support
 
 It revises from simple-markdown-parser of [Powerpage Markdown Document](https://github.com/casualwriter/powerpage-md-document) 
 for the following features
 
 * simple, super lightweight (less than 190 lines)
 * vanilla javascript, no dependance
-* support all browsers (IE9+, Chrome, Firfox, Brave, etc..)
+* all browsers supported (IE9+, Chrome, Firfox, Brave, etc..)
 * straight-forward coding style, hopefully readable.
-* support [basic syntax](https://casualwriter.github.io/casual-markdown/casual-markdown-syntax.html) according [Basic Markdown Syntax (markdownguide.org)](https://www.markdownguide.org/basic-syntax/)  
-* support some [enhanced syntax](https://casualwriter.github.io/casual-markdown/casual-markdown-syntax.html#enhanced-syntax)
+* support [basic+enhanced syntax](https://casualwriter.github.io/casual-markdown/casual-markdown-syntax.html) according [Basic Markdown Syntax (markdownguide.org)](https://www.markdownguide.org/basic-syntax/)  
 * TOC and scrollspy support
 * highlight comments/keywords in code-block
 * frontmatter for simple YAML
@@ -19,14 +18,7 @@ for the following features
 
 ### Usage Guide
 
-just simply include [casual-markdown.js](source/casual-markdown.js) from local or CDN.  
-
-~~~ 
-<link rel="stylesheet" href="casual-markdown.css">
-<script src="casual-markdown.js"></script>
-~~~
-
-or CDN
+just simply include [casual-markdown.js](https://github.com/casualwriter/casual-markdown/blob/main/source/casual-markdown.js) from CDN or local.  
 
 ~~~ 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/casualwriter/casual-markdown/dist/casual-markdown.css">
@@ -39,6 +31,8 @@ or github-page (may specify version no)
 <link rel="stylesheet" href="https://casualwriter.github.io/dist/casual-markdown@0.90.css">
 <script src="https://casualwriter.github.io/dist/casual-markdown@0.90.js"></script>
 ~~~ 
+
+or may download `casual-markdown.js, casual-markdown.css` and include them locally.
 
 
 ### Basic Usage
@@ -70,14 +64,15 @@ md.toc( 'content', 'toc', { title:'Index', scrollspy:'content' } )
 
 #### TOC from special elements
 
-TOC may retrieve heading from special elements TAG. `e.g. tag=section`. 
-md.toc() will retrieve content from the tag using class of tag name. remember provide additional #toc class for this tag.
+TOC may retrieve heading from special TAG elements. ``e.g. tag <section>``. 
+
+md.toc() retrieve content from selected tags, using tag name as className. So remember provide additional #toc class to show it nice in TOC dialog.
 
 ~~~
 // render TOC from tag:section, and H3, H4
 md.toc( 'content', 'toc', { css: 'section,h3,h4' } )
 
-// remember provide style class for TOC tag, normally set psoiton for left margin
+// remember provide style class for TOC tag, normally set position for left margin
 var style = document.createElement('style');
 style.innerHTML = '#toc .SECTION { margin-left:2em }
 document.head.appendChild(style);
@@ -97,8 +92,8 @@ md.toc( 'content', 'toc', { css: 'h3,h4,h5', scrollspy:'body' } )
 
 #### Code-block formatter
 
-code-block keywords are hard-code in function md.formatCode(). 
-If do want to highlight different keywords, please override original function md.formatCode() showing below. 
+Code-block keywords will be highlighted, they are hard-code in function md.formatCode(). 
+If do want to highlight different keywords, please revise or override original function md.formatCode(). 
 
 ~~~
 //===== format code-block, highlight remarks/keywords for code/sql
@@ -124,7 +119,9 @@ md.formatCode = function (match, title, block) {
 #### Extend Parser for enhanced syntax
 
 to parse every markdown-block, dummy function md.before() and md.after() will be called 
-(i.e. ``md.after( md.parser( md.before(mdText) ) )``). They can be re-defined for enhanced syntax
+(i.e. ``md.after( md.parser( md.before(mdText) ) )``). 
+
+They can be re-defined for enhanced syntax. for example,
 
 ~~~
 // original code in casual-markdown.js
@@ -145,25 +142,29 @@ document.getElementById('content').innerHTML = md.html()
 
 ### Frontmatter for simple YAML
 
-Support frontmatter for simple YAML, only support string value at first level (i.e. key = value) 
+Support frontmatter for simple YAML, only support string value (with 2 level ) meanwhile.
 
 Frontmatter start with `---` (at least three) in first line of markdown document, for example
 
 ```
 -----------------------------------------------------------------------------
-title   : Casual Markdown 
-toc     : leftspy
-github  : https://github.com/casualwriter/casual-markdown 
-version : v0.90, last updated on 2022/07/31
+title   : Markdown-as-Page
+style   : #header { background: RoyalBlue }
+menu    :    
+  Home            : index.md
+  Supported Syntax: md-syntax.md
+  md-as-Doc       : md-as-doc.md
+  md-as-Page      : md-as-page.md
+  md-as-Blog      : md-as-blog.md
+  [DarkMode]      : javascript:darkmode() 
 -----------------------------------------------------------------------------
 
-## {{ title }}
+## {{ title }}  
 
-[casual-markdown]({{github}}) is a super lightweight RegExp-based markdown parser, with TOC and scrollspy support
-
+....
 ```
 
-After called md.html(), js program may refer these values by `md.yaml[name]` (i.e. md.yaml = { title:'Casual Markdown', toc:'leftspy', .... }) 
+After called md.html(), js program may refer these values by `md.yaml[name]` (i.e. md.yaml = { title:'Markdown-as-Page', .... }) 
 and html string with ``{{ name }}`` will be replaced with related values
                                                
 
@@ -171,7 +172,7 @@ and html string with ``{{ name }}`` will be replaced with related values
 
 * Markdown-as-Document: https://github.com/casualwriter/casual-markdown-doc 
 * Markdown-as-WebPage: https://github.com/casualwriter/casual-markdown-page   
-* Markdown-as-Blog: developping... 
+* Markdown-as-Blog: https://github.com/casualwriter/casual-markdown-blog (not ready yet!)
 
 
 ### Update History
@@ -179,5 +180,5 @@ and html string with ``{{ name }}`` will be replaced with related values
 * 2022/07/19, v0.80, initial release.
 * 2022/07/21, v0.82, refine toc/scrollspy, add dummy function for extension
 * 2022/07/22, v0.85, frontmatter for simple YAML
-* 2022/07/22, v0.90, refine frontmatter. code casual-markdown-doc.js, casual-markdown-page.html
+* 2022/07/31, v0.90, refine frontmatter. code casual-markdown-doc.js, casual-markdown-page.html
 
