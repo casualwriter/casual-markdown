@@ -1,4 +1,4 @@
-﻿/*****************************************************************************
+/*****************************************************************************
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
  * last updated on 2022/07/22, v0.85, code formatter, toc, scrollspy and front matter  
  *
@@ -80,7 +80,7 @@
     // links syntax: [title "title"](url) => <a href="url" title="title">text</a>          
     mdstr = mdstr.replace(/\[(.*?)\]\((.*?) "new"\)/gm, '<a href="$2" target=_new>$1</a>')
     mdstr = mdstr.replace(/\[(.*?)\]\((.*?) "(.*?)"\)/gm, '<a href="$2" title="$3">$1</a>')
-    mdstr = mdstr.replace(/([<\s])(http[s]\:\/\/.*?)([\s\>])/gm, '$1<a href="$2">$2</a>$3')
+    mdstr = mdstr.replace(/([<\s])(https?\:\/\/.*?)([\s\>])/gm, '$1<a href="$2">$2</a>$3')
     mdstr = mdstr.replace(/\[(.*?)\]\(\)/gm, '<a href="$1">$1</a>')
     mdstr = mdstr.replace(/\[(.*?)\]\((.*?)\)/gm, '<a href="$2">$1</a>')
                   
@@ -189,7 +189,7 @@
 }).call( function(){ return this||(typeof window!=='undefined'?window:global)}() );
 
 //=============================================================================
-// 20220719, show markdown-document in <body> tag into HTML document
+// 20220719, convert markdown-document in <body> tag into HTML document
 //=============================================================================
 window.onload = function () {
 
