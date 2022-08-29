@@ -172,7 +172,7 @@ and html string with ``{{ name }}`` will be replaced with related values
 
 * Markdown-as-Document: https://github.com/casualwriter/casual-markdown-doc 
 * Markdown-as-WebPage: https://github.com/casualwriter/casual-markdown-page   
-* Markdown-as-Blog: https://github.com/casualwriter/casual-markdown-blog (not ready yet!)
+* Markdown-as-Blog: https://github.com/casualwriter/casual-markdown-blog 
 
 
 ### Update History
