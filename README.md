@@ -5,7 +5,7 @@ A lightweight RegExp-based markdown parser, with TOC, scrollspy and frontmatter 
 It revises from simple-markdown-parser of [Powerpage Markdown Document](https://github.com/casualwriter/powerpage-md-document) 
 for the following features
 
-* simple, super lightweight (less than 190 lines)
+* simple, super lightweight (190 lines)
 * vanilla javascript, no dependance
 * all browsers supported (IE9+, Chrome, Firfox, Brave, etc..)
 * straight-forward coding style, hopefully readable.
@@ -173,6 +173,7 @@ and html string with ``{{ name }}`` will be replaced with related values
 * Markdown-as-Document: https://github.com/casualwriter/casual-markdown-doc 
 * Markdown-as-WebPage: https://github.com/casualwriter/casual-markdown-page   
 * Markdown-as-Blog: https://github.com/casualwriter/casual-markdown-blog 
+* Markdow resume: https://github.com/casualwriter/casual-markdown-cv
 
 
 ### Update History
