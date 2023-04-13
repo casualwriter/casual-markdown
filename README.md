@@ -5,9 +5,9 @@ A lightweight RegExp-based markdown parser, with TOC, scrollspy and frontmatter 
 It revises from simple-markdown-parser of [Powerpage Markdown Document](https://github.com/casualwriter/powerpage-md-document) 
 for the following features
 
-* simple, super lightweight (190 lines)
-* vanilla javascript, no dependance
-* all browsers supported (IE9+, Chrome, Firfox, Brave, etc..)
+* simple, super lightweight (200 lines)
+* vanilla javascript, no dependence
+* all browsers supported (IE9+, Chrome, Firefox, Brave, etc..)
 * straight-forward coding style, hopefully readable.
 * support [basic+enhanced syntax](https://casualwriter.github.io/casual-markdown/casual-markdown-syntax.html) according [Basic Markdown Syntax (markdownguide.org)](https://www.markdownguide.org/basic-syntax/)  
 * TOC and scrollspy support
@@ -28,8 +28,8 @@ just simply include [casual-markdown.js](https://github.com/casualwriter/casual-
 or github-page (may specify version no)
 
 ~~~ 
-<link rel="stylesheet" href="https://casualwriter.github.io/dist/casual-markdown@0.90.css">
-<script src="https://casualwriter.github.io/dist/casual-markdown@0.90.js"></script>
+<link rel="stylesheet" href="https://casualwriter.github.io/dist/casual-markdown@0.92.css">
+<script src="https://casualwriter.github.io/dist/casual-markdown@0.92.js"></script>
 ~~~ 
 
 or may download `casual-markdown.js, casual-markdown.css` and include them locally.
@@ -98,21 +98,21 @@ If do want to highlight different keywords, please revise or override original f
 ~~~
 //===== format code-block, highlight remarks/keywords for code/sql
 md.formatCode = function (match, title, block) {
-  // convert tag <> to &lt; &gt; tab to 3 space, support mark code using ^^^
+  // convert tag <> to &lt; &gt; tab to 3 space, support marker using ^^^
   block = block.replace(/</g,'&lt;').replace(/\>/g,'&gt;')
   block = block.replace(/\t/g,'   ').replace(/\^\^\^(.+?)\^\^\^/g, '<mark>$1</mark>')
   
   // highlight comment and keyword based on title := none | sql | code
   if (title.toLowerCase(title) == 'sql') {
     block = block.replace(/^\-\-(.*)/gm,'<rem>--$1</rem>').replace(/\s\-\-(.*)/gm,' <rem>--$1</rem>')   
-    block = block.replace(/(\s)(function|procedure|return|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
-    block = block.replace(/(\s)(select|update|delete|insert|create|from|where|group by|having|set)(\s)/gim,'$1<b>$2</b>$3')
+    block = block.replace(/(\s?)(function|procedure|return|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
+    block = block.replace(/(\s?)(select|update|delete|insert|create|from|where|group by|having|set)(\s)/gim,'$1<b>$2</b>$3')
   } else if ((title||'none')!=='none') {
     block = block.replace(/^\/\/(.*)/gm,'<rem>//$1</rem>').replace(/\s\/\/(.*)/gm,' <rem>//$1</rem>')   
-    block = block.replace(/(\s)(function|procedure|return|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
-    block = block.replace(/(\s)(var|let|const|for|next|do|while|loop|continue|break|switch|try|catch|finally)(\s)/gim,'$1<b>$2</b>$3')
+    block = block.replace(/(\s?)(function|procedure|return|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
+    block = block.replace(/(\s?)(var|let|const|for|next|do|while|loop|continue|break|switch|try|catch|finally)(\s)/gim,'$1<b>$2</b>$3')
   }
-  return '<pre title="' + title + '"><code>'  + block + '</code></pre>'
+  return '<pre title="' + title + '"><button onclick="md.clipboard(this)">copy</button><code>'  + block + '</code></pre>'
 }
 ~~~
 
@@ -172,8 +172,7 @@ and html string with ``{{ name }}`` will be replaced with related values
 
 * Markdown-as-Document: https://github.com/casualwriter/casual-markdown-doc 
 * Markdown-as-WebPage: https://github.com/casualwriter/casual-markdown-page   
-* Markdown-as-Blog: https://github.com/casualwriter/casual-markdown-blog 
-* Markdow resume: https://github.com/casualwriter/casual-markdown-cv
+* Markdown-as-Blog: https://github.com/casualwriter/casual-markdown-blog (not ready yet!)
 
 
 ### Update History
@@ -182,4 +181,5 @@ and html string with ``{{ name }}`` will be replaced with related values
 * 2022/07/21, v0.82, refine toc/scrollspy, add dummy function for extension
 * 2022/07/22, v0.85, frontmatter for simple YAML
 * 2022/07/31, v0.90, refine frontmatter. code casual-markdown-doc.js, casual-markdown-page.html
+* 2023/04/12, v0.92, add copy feature for code-block. minor fine-tune.
 

@@ -1,8 +1,9 @@
 /*****************************************************************************
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
- * last updated on 2022/07/31, v0.90, refine frontmatter (simple yaml)  
+ * 2022/07/31, v0.90, refine frontmatter (simple yaml)  
+ * 2023/04/12, v0.92, addCopyButton for code-block
  *
- * Copyright (c) 2022, Casualwriter (MIT Licensed)
+ * Copyright (c) 2022-2023, Casualwriter (MIT Licensed)
  * https://github.com/casualwriter/casual-markdown
 *****************************************************************************/
 ;(function(){ 
@@ -33,16 +34,23 @@
     // highlight comment and keyword based on title := none | sql | code
     if (title.toLowerCase(title) == 'sql') {
       block = block.replace(/^\-\-(.*)/gm,'<rem>--$1</rem>').replace(/\s\-\-(.*)/gm,' <rem>--$1</rem>')   
-      block = block.replace(/(\s)(function|procedure|return|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
-      block = block.replace(/(\s)(select|update|delete|insert|create|from|where|group by|having|set)(\s)/gim,'$1<b>$2</b>$3')
+      block = block.replace(/(\s?)(function|procedure|return|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
+      block = block.replace(/(\s?)(select|update|delete|insert|create|from|where|group by|having|set)(\s)/gim,'$1<b>$2</b>$3')
     } else if ((title||'none')!=='none') {
       block = block.replace(/^\/\/(.*)/gm,'<rem>//$1</rem>').replace(/\s\/\/(.*)/gm,' <rem>//$1</rem>')   
-      block = block.replace(/(\s)(function|procedure|return|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
-      block = block.replace(/(\s)(var|let|const|for|next|do|while|loop|continue|break|switch|try|catch|finally)(\s)/gim,'$1<b>$2</b>$3')
+      block = block.replace(/(\s?)(function|procedure|return|exit|if|then|else|end|loop|while|or|and|case|when)(\s)/gim,'$1<b>$2</b>$3')
+      block = block.replace(/(\s?)(var|let|const|=>|for|next|do|while|loop|continue|break|switch|try|catch|finally)(\s)/gim,'$1<b>$2</b>$3')
     }
-    return '<pre title="' + title + '"><code>'  + block + '</code></pre>'
+    
+    return '<pre title="' + title + '"><button onclick="md.clipboard(this)">copy</button><code>'  + block + '</code></pre>'
   }
-  
+
+  // copy to clipboard for code-block
+  md.clipboard = (e) => {
+    navigator.clipboard.writeText( e.parentNode.innerText.replace('copy\n','') )
+    e.innerText = 'copied'
+  }
+
   //===== parse markdown string into HTML string (exclude code-block)
   md.parser = function( mdstr ) {
   
@@ -50,7 +58,7 @@
     for (var name in this.yaml) mdstr = mdstr.replace( new RegExp('\{\{\\s*'+name+'\\s*\}\}', 'gm'), this.yaml[name] )
     
     // table syntax
-    mdstr = mdstr.replace(/\n(.+?)\n.*?\-\-\|\-\-.*?\n([\s\S]*?)\n\s*?\n/g, function (m,p1,p2) {
+    mdstr = mdstr.replace(/\n(.+?)\n.*?\-\-\s?\|\s?\-\-.*?\n([\s\S]*?)\n\s*?\n/g, function (m,p1,p2) {
         var thead = p1.replace(/^\|(.+)/gm,'$1').replace(/(.+)\|$/gm,'$1').replace(/\|/g,'<th>')
         var tbody = p2.replace(/^\|(.+)/gm,'$1').replace(/(.+)\|$/gm,'$1')
         tbody = tbody.replace(/(.+)/gm,'<tr><td>$1</td></tr>').replace(/\|/g,'<td>')
@@ -91,10 +99,10 @@
                   
     // unordered/ordered list, max 2 levels  => <ul><li>..</li></ul>, <ol><li>..</li></ol>
     mdstr = mdstr.replace(/^[\*+-][ .](.*)/gm, '<ul><li>$1</li></ul>' )
-    mdstr = mdstr.replace(/^\d[ .](.*)/gm, '<ol><li>$1</li></ol>' )
+    mdstr = mdstr.replace(/^\d\d?[ .](.*)/gm, '<ol><li>$1</li></ol>' )
     mdstr = mdstr.replace(/^\s{2,6}[\*+-][ .](.*)/gm, '<ul><ul><li>$1</li></ul></ul>' )
     mdstr = mdstr.replace(/^\s{2,6}\d[ .](.*)/gm, '<ul><ol><li>$1</li></ol></ul>' )
-    mdstr = mdstr.replace(/<\/[ou]l\>\n<[ou]l\>/g, '\n' )
+    mdstr = mdstr.replace(/<\/[ou]l\>\n\n?<[ou]l\>/g, '\n' )
     mdstr = mdstr.replace(/<\/[ou]l\>\n<[ou]l\>/g, '\n' )
                   
     // text decoration: bold, italic, underline, strikethrough, highlight                
@@ -138,7 +146,7 @@
 
     return '<div class="markdown">' + mdHTML + md.after( md.parser( md.before(mdText) ) ) + '</div>'
   }
-
+  
   //===== TOC support
   md.toc = function (srcDiv, tocDiv, options ) {
 
