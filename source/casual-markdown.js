@@ -2,9 +2,13 @@
  * casual-markdown - a lightweight regexp-base markdown parser with TOC support
  * 2022/07/31, v0.90, refine frontmatter (simple yaml)  
  * 2023/04/12, v0.92, addCopyButton for code-block
+ * 2024/02/23, v0.92.1, add header align elements
  *
  * Copyright (c) 2022-2023, Casualwriter (MIT Licensed)
  * https://github.com/casualwriter/casual-markdown
+ * 
+ * CopyRight (c) 2022-2023, Vio-Eli (MIT Licensed)
+ * https://github.com/Vio-Eli/resume-markdown
 *****************************************************************************/
 ;(function(){ 
 
@@ -75,6 +79,47 @@
               .replace(/^## (.*?)\s*#*$/gm, '<h2>$1</h2>')
               .replace(/^# (.*?)\s*#*$/gm, '<h1>$1</h1>')
               .replace(/^<h(\d)\>(.*?)\s*{(.*)}\s*<\/h\d\>$/gm, '<h$1 id="$3">$2</h$1>')
+
+    // header aligning elements: =-= => left, =+= => right, =^= => center, =_= => icon
+    mdstr = mdstr.replace(/^<h(\d)>(.*)<\/h\1>$\n+((?:=(?:\+|-|\^|_)= (?:.*)$\n+)+)/gm, (match, headerLevel, headerText, headerContent) => {
+      const alignedContent = {
+          left: [],
+          center: [],
+          right: [],
+          icon: []
+      };
+
+      console.log(headerContent);
+
+      let alignedMatch;
+      alignedRegex = /(=(?:-|\^|\+|_)=) ([^\n]*)(?:\n|$)/g;
+
+      while ((alignedMatch = alignedRegex.exec(headerContent)) !== null) {
+          const alignment = alignedMatch[1];
+          const content = alignedMatch[2];
+
+          alignedContent[alignment === '=+=' ? 'right' : alignment === '=^=' ? 'center' : alignment === '=_=' ? 'icon' : 'left'].push(content);
+      }
+
+      const lcolDiv = alignedContent.left.length > 0 ? alignedContent.left.map(line => `<div class="h${headerLevel}-lcontent">${line}</div>`).join('\n') : '';
+      const ccolDiv = alignedContent.center.length > 0 ? alignedContent.center.map(line => `<div class="h${headerLevel}-ccontent">${line}</div>`).join('\n') : '';
+      const rcolDiv = alignedContent.right.length > 0 ? alignedContent.right.map(line => `<div class="h${headerLevel}-rcontent">${line}</div>`).join('\n') : '';
+      const iconDiv = alignedContent.icon.length > 0 ? alignedContent.icon.map(line => `<div class="h${headerLevel}-icon">${line}</div>`).join('\n') : '';
+
+      if (headerText.match(/(?:=\+=) (.*)$/gm)) {
+          headerText = headerText.replace(/(?:=\+=) (.*)$/gm, '$1');
+
+          return `<h${headerLevel}><div class="h${headerLevel}-lcol">${lcolDiv}</div>\n<div class="h${headerLevel}-ccol">${ccolDiv}</div>\n<div class="h${headerLevel}-rcol"><div class="h${headerLevel}-rheader">${headerText}</div>${rcolDiv}</div>${iconDiv}</h${headerLevel}>\n`
+      } else if (headerText.match(/(?:=\^=) (.*)$/gm)) {
+          headerText = headerText.replace(/(?:=\^=) (.*)$/gm, '$1');
+
+          return `<h${headerLevel}><div class="h${headerLevel}-lcol">${lcolDiv}</div>\n<div class="h${headerLevel}-ccol"><div class="h${headerLevel}-cheader">${headerText}</div>${ccolDiv}</div>\n<div class="h${headerLevel}-rcol">${rcolDiv}</div>${iconDiv}</h${headerLevel}>\n`
+      } else {
+          headerText = headerText.replace(/(?:=-= |)(.*)$/gm, '$1');
+
+          return `<h${headerLevel}><div class="h${headerLevel}-lcol"><div class="h${headerLevel}-lheader">${headerText}</div>${lcolDiv}</div>\n<div class="h${headerLevel}-ccol">${ccolDiv}</div>\n<div class="h${headerLevel}-rcol">${rcolDiv}</div>${iconDiv}</h${headerLevel}>\n`
+      }
+  })
         
     // inline code-block: `code-block` => <code>code-block</code>    
     mdstr = mdstr.replace(/``(.*?)``/gm, function(m,p){ return '<code>' + md.formatTag(p).replace(/`/g,'&#96;') + '</code>'} ) 
