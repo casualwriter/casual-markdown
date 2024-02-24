@@ -17,3 +17,28 @@
 .toc .H4 { margin-left:4em }
 .toc .active { color:#0057b7  }
 .toc li:hover { background:#f0f0f0 }
+.h1-rcol { display: flex; flex-direction: column; }
+.h1-rcontent { text-align: center; font-size: 60%; }
+.h1-rcontent img { height: auto; max-width: 125px; }
+.h1-ccol { display: flex; flex-direction: column; }
+.h1-cheader { text-align: center; }
+.h1-ccontent { text-align: center; font-size: 60%; }
+.h1-icon { height: auto; max-width: 20%; }
+.h2-lcol { display: flex; flex-direction: column; }
+.h2-ccol { display: flex; flex-direction: column; align-items: center; }
+.h2-ccontent { text-align: center; font-weight: normal; font-size: .67em; }
+.h2-lcontent { text-align: left; font-weight: normal; font-size: .67em; }
+.h2-rcontent { font-style: normal; font-weight: normal; font-size: .67em; }
+.h2-icon { height: auto; max-width: 10%; }
+.h3-lcol { display: flex; flex-direction: column; }
+.h3-ccol { display: flex; flex-direction: column; align-items: center; }
+.h3-ccontent { text-align: center; font-weight: normal; font-size: .83em; }
+.h3-lcontent { text-align: left; font-weight: normal; font-size: .83em; }
+.h3-rcontent { font-style: normal; font-weight: normal; font-size: .83em; }
+.h3-icon { height: auto; max-width: 5%; }
+.h4-lcol { display: flex; flex-direction: column; }
+.h4-ccol { display: flex; flex-direction: column; align-items: center; }
+.h4-ccontent { text-align: center; font-weight: normal; }
+.h4-lcontent { text-align: left; font-weight: normal; }
+.h4-rcontent { font-style: normal; font-weight: normal; }
+.h4-icon { height: auto; max-width: 5%; }
